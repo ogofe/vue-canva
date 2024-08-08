@@ -68,7 +68,7 @@ onMounted(() => {
 
       <div class="grid lg:grid-cols-4 sm:grid-cols-2 flex-wrap gap-4 align-middle justify-center mt-7">
         <div  @click="() => beginEdit(image.file)" class="py-2 cursor-pointer bg-white rounded  px-2 img-item" v-for="image in images" :key="image.id">
-          <div class="rounded w-[100%] h-[300px]">
+          <div class="rounded w-[100%] h-[450px]">
             <img :src="image.file" class="w-[100%] h-[100%] rounded" />
           </div>
         </div>
