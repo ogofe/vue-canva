@@ -207,7 +207,7 @@ onMounted(() => {
   try {
     // editor.value = createEditor(canvasElement.value);
     createEditor(canvasElement.value);
-    canvasElement.value.style.backgroundImage = `url('http://localhost:3000/${flyerImage}')`;
+    canvasElement.value.style.backgroundImage = `url('${document.location.protocol}://${document.location.host}/${flyerImage}')`;
     canvasElement.value.style.backgroundSize = '100%';
     canvasElement.value.style.backgroundSize = 'cover';
     canvasElement.value.style.backgroundBlendMode = 'color';
