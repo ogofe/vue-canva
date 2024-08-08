@@ -202,12 +202,14 @@ function createEditor(ctx) {
   return canvas;
 }
 
+const url = `${document.location.protocol}://${document.location.host}`
+
 // On mounted
 onMounted(() => {
   try {
     // editor.value = createEditor(canvasElement.value);
     createEditor(canvasElement.value);
-    canvasElement.value.style.backgroundImage = `url('${document.location.protocol}://${document.location.host}/${flyerImage}')`;
+    canvasElement.value.style.backgroundImage = `url('${url}/${flyerImage}')`;
     canvasElement.value.style.backgroundSize = '100%';
     canvasElement.value.style.backgroundSize = 'cover';
     canvasElement.value.style.backgroundBlendMode = 'color';
@@ -232,7 +234,7 @@ function saveCanvasAsImage() {
   const tempCtx = tempCanvas.getContext('2d');
   // Draw the background image on the temporary canvas
   const backgroundImage = new Image();
-  backgroundImage.src = `http://localhost:3000/${flyerImage}`; // The URL of your background image
+  backgroundImage.src = `${url}/${flyerImage}`; // The URL of your background image
   backgroundImage.style.zIndex = 30;
   alert("Downloading...");
 
