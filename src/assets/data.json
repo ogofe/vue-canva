@@ -1,0 +1,15 @@
+{
+    "images": {
+        "bayram": [
+            {"id": "1", "file": "images/fish.png"},
+            {"id": "2", "file": "images/platter.png"},
+            {"id": "3", "file": "images/shrimp.png"}
+        ],
+        "alien": [
+            {"id": "1", "file": "images/alien.png"},
+            {"id": "2", "file": "images/sky.png"},
+            {"id": "3", "file": "images/galaxy.png"},
+            {"id": "4", "file": "images/spaceship.png"}
+        ]
+    }
+}
