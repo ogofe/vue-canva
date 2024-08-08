@@ -202,7 +202,7 @@ function createEditor(ctx) {
   return canvas;
 }
 
-const url = `${document.location.protocol}://${document.location.host}`
+const url = `${document.location.protocol}//${document.location.host}`
 
 // On mounted
 onMounted(() => {
@@ -217,7 +217,7 @@ onMounted(() => {
     canvasElement.value.style.backgroundPositionY = '0px';
     canvasElement.value.style.backgroundRepeat = 'no-repeat';
 
-    console.log("Canvas initialized:", editor.value);
+    console.log("Canvas initialized:", editor.canvas);
   } catch (error) {
     console.log("Error initializing canvas:", error);
   }
