@@ -13,9 +13,17 @@ const {
 <template>
     <div id="toolbar" class="toolbar flex-1 bg-[#2b2929] text-white px-5 py-3">
         <div class="">
-            <TextTools :v-bind="editView.type" v-if="editView.type === 'text'" />
-            <ElementTools :v-bind="editView.type" v-if="editView.type === 'elements'" />
+            <TextTools :v-bind="editView.type" v-if="editView.type === 'textbox'" />
+            <ElementTools :v-bind="editView.type" v-if="editView.type === 'path' || editView.type === 'elements'" />
             <BrandTools :v-bind="editView.type" v-if="editView.type === 'brand'" />
         </div>
     </div>
 </template>
+
+
+<style scoped>
+    .toolbar{
+        overflow-y: auto;
+    }
+</style>
+

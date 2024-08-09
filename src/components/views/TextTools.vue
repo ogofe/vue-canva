@@ -1,15 +1,13 @@
 <script setup>
     import {onMounted, ref, } from 'vue';
-    import {Canvas, FabricText, FabricImage, Textbox}  from 'fabric';
+    import {Textbox}  from 'fabric';
     import { useGlobalStore } from '@/stores/globalStore';
     import EditText from '@/components/editors/EditText.vue';
 
     const {
         editor,
-        currentSelection,
         editView,
         addObjectToCanvas,
-        objectDefaults,
     } = useGlobalStore();
 
     function handleAddText(size=27){
@@ -41,22 +39,9 @@
                 fill: '#fff',
                 selectable: true,
                 textAlign: 'left',
-                styles: {
-                    borderRadius: 5
-                }
             })
+            text.setCoords();
             addObjectToCanvas(text)
-            text.setControlsVisibility({
-                mt: true, // middle top
-                mb: true, // middle bottom
-                ml: true, // middle left
-                mr: true, // middle right
-                bl: true, // bottom left
-                br: true, // bottom right
-                tl: true, // top left
-                tr: true, // top right
-                mtr: true, // middle top rotator
-            })
         }catch(error){
             alert(`An error occured: ${error.message}`)
         }

@@ -11,9 +11,8 @@ import {
   ClTextAlignRight,
   MdRoundFormatColorText,
   FlFilledDelete,
-  
+
 } from '@kalimahapps/vue-icons';
-import EditorNavbar from './EditorNavbar.vue';
 
 // Refs
 const canvasElement = ref(null);
@@ -26,8 +25,6 @@ const {
   changeEditView,
 } = useGlobalStore();
 const fontSize = ref(14);
-
-// Functions
 
 
 function toggleTextBold(){
@@ -109,63 +106,39 @@ function changeAlignment(align){
     editor.canvas.renderAll();
   }
 }
-
-function saveCanvasAsImage() {
-  const canvasElement = document.getElementById('canvas');
-  const editorInstance = editor.canvas;
-
-  // Create a temporary canvas to draw the background image
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = editorInstance.width;
-  tempCanvas.height = editorInstance.height;
-  const tempCtx = tempCanvas.getContext('2d');
-  // Draw the background image on the temporary canvas
-  const backgroundImage = new Image();
-  backgroundImage.src = `http://localhost:3000/${flyerImage}`; // The URL of your background image
-  backgroundImage.style.zIndex = 30;
-  alert("Downloading...");
-
-  try {
-    backgroundImage.onload = () => {
-      tempCtx.drawImage(backgroundImage, 0, 0, editorInstance.width, editorInstance.height);
-  
-      // Draw the content of the Fabric.js canvas on top of the background image
-      const fabricImage = new Image();
-      fabricImage.src = editorInstance.toDataURL();
-      fabricImage.onload = () => {
-        tempCtx.drawImage(fabricImage, 0, 0, editorInstance.width, editorInstance.height);
-  
-        // Convert the temporary canvas to a data URL and create a download link
-        const dataURL = tempCanvas.toDataURL('image/jpeg');
-        const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = 'canvas_export.jpg';
-        link.click();
-      };
-    };
-  } catch (error) {
-    alert(`Error saving image: ${error.message}`);
-  }
-}
 </script>
 
 <template>
-    <div class="editor overflow-hidden flex-1 relative zoom-out">
+  <div v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
+      <button @click="() => changeEditView({ type: 'textbox', action: 'edit', scope: 'font'})" class="flex align-center gap-x-2 px-3 font-semibold text-[12px] py-2 rounded bg-[#cfcdcdad]">
+          {{ currentSelection.element.fontFamily }}
+          <BsChevronDown class="font-bold" />
+      </button>
+  </div>
 
-      <EditorNavbar v-if="currentSelection.element && editView.type === 'path'">
-        <button @click="() => changeEditView({ type: 'path', action: 'edit', scope: 'color'})" class="px-3 font-semibold text-[12px] py-2 rounded bg-[#cfcdcdad]"><MdRoundFormatColorText class="text-[20px]" /></button>
-      </EditorNavbar>
+  <div v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
+    <button @click="() => changeEditView({ type: 'textbox', action: 'edit', scope: 'color'})" class="px-3 font-semibold text-[12px] py-2 rounded bg-[#cfcdcdad]"><MdRoundFormatColorText class="text-[20px]" /></button>
+  </div>
 
-      <EditorNavbar v-else />
+  <div class="flex" v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
+    <button class="btn font-bold" @click="reduceFont">-</button>
+    <input @input="(e) => setFontSize(e.target.value)" class="input w-[50px] text-center" type="number" :min="8" :max="64" v-model="fontSize" />
+    <button class="btn font-bold" @click="addFont">+</button>
+  </div>
 
-      <div class="w-[100%] absolute overflow-auto bg-[#dddddd] h-fill py-10 px-10">
-        <div class="flex justify-center align-middle">
-          <slot></slot>
-        </div>
-      </div>
-    </div>
+  <div class="flex rounded bg-[#ddd]" v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
+    <button class="py-2 font-bold px-2" @click="() => changeAlignment('left')"><ClTextAlignLeft class="text-[19px]" /></button>
+    <button class="py-2 font-bold px-2" @click="() => changeAlignment('center')"><ClTextAlignCenter class="text-[19px]" /></button>
+    <button class="py-2 font-bold px-2" @click="() => changeAlignment('right')"><ClTextAlignRight class="text-[19px]" /></button>
+  </div>
+
+  <div class="flex" v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
+      <button @click="toggleTextBold" class="btn font-mono font-bold">B</button>
+      <!-- <button @click="toggleTextUnderline" class="btn font-bold font-mono underline">U</button> -->
+      <button @click="toggleTextItalic" class="btn font-bold font-serif"><i>I</i></button>
+  </div>
 </template>
 
-<style scoped>
 
+<style>
 </style>

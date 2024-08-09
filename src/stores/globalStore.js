@@ -6,7 +6,7 @@ export const useGlobalStore = defineStore('global', () => {
   const currentSelection = reactive({type: null, element: null}); 
   const flyerImage = ref(null);
   const editor = reactive({canvas: null});
-  const editView = reactive({ type: 'text', action: 'create', scope: null });
+  const editView = reactive({ type: 'textbox', action: 'create', scope: null });
   const objectDefaults = reactive({
     fontFamily: 'Times New Roman',
     fontSize: 14,

@@ -64,6 +64,7 @@ const fontList = [
     'Sankofa Display',
     'Pacifico',
     'Calibri',
+    'Rubik Glitch',
     'Fantasy',
     'Cursive',
     'Poppins',
@@ -131,6 +132,22 @@ onMounted(async () => {
                 <button @click="() => showColorPicker('textColor')" class="px-2 py-2 rounded my-1 bg-[#8080805c]" > <IoSharpColorPalette class="text-[20px] fill-w" /> </button>                
             </div>
         </div>
+    </div>
+
+    <div class="animate-fade" :v-bind="editView.scope" v-if="editView.scope === 'layer'">
+        <h3 class="font-bold mb-4 text-white"> Object Layer </h3>
+        <div class="mb-4">
+                        
+            <div class="block">
+                <button @click="sendToBack" class="px-2 py-2 rounded my-3 bg-[#8080805c] flex align-center gap-x-6 w-full" > <BsLayerBackward class="text-[20px] fill-w" /> Send To Back </button>
+                <button @click="sendToFront" class="px-2 py-2 rounded my-3 bg-[#8080805c] flex align-center gap-x-6 w-full" > <BsLayerForward class="text-[20px] fill-w" /> Bring To Front </button>                
+            </div>
+            
+        </div>
+        
+        <hr class="my-3" />
+        
+        <h3 class="font-bold mb-4 text-white"> Opacity </h3>
     </div>
 
     <div class="animate-fade" :v-bind="editView.scope" v-if="editView.scope === 'layer'">

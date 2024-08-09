@@ -1,17 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useGlobalStore } from '@/stores/globalStore.js';
 import { Canvas } from 'fabric';
 import {
-  BsLayersHalf,
-  SiCustomink, BxSolidCloudDownload, CoTextSize, FlFilledDesignIdeas,
-  ClTextAlignLeft,
-  ClTextAlignCenter,
-  ClTextAlignRight,
+  SiCustomink, CoTextSize, FlFilledDesignIdeas,
   MdChevronRight,
   MdChevronLeft,
-  FlFilledDelete,
-
 } from '@kalimahapps/vue-icons';
 import Toolbar from '@/components/Toolbar.vue';
 import CanvasEditor from '@/components/CanvasEditor.vue';
@@ -21,23 +15,20 @@ const canvasElement = ref(null);
 const fontList = ref(['Arial', 'Times New Roman']);
 const { 
   flyerImage,
-  fabricObjects,
   addObject,
-  currentSelection,
   setEditor,
   editor,
+  currentSelection,
   selectObject,
   editView,
-  deleteObject,
-  addObjectToCanvas,
   changeEditView,
 } = useGlobalStore();
 const fontSize = ref(14);
 
 // Sample data
 const editLinks = ref([
-  { id: 'text', label: 'Text', icon: CoTextSize },
-  { id: 'elements', label: 'Elements', icon: FlFilledDesignIdeas },
+  { id: 'textbox', label: 'Text', icon: CoTextSize },
+  { id: 'path', label: 'Elements', icon: FlFilledDesignIdeas },
   { id: 'brand', label: 'Brand', icon: SiCustomink },
 ]);
 
@@ -49,91 +40,6 @@ function toggleToolbar(){
   const elem = document.getElementById('toolbar');
   elem.classList.toggle('open')
   navIsOpen.value = !navIsOpen.value
-  // if (elem.classList.contains('open')){
-  //   elem.classList.add('open')
-  // }else{
-  //   elem.classList.remove('open')
-  // }
-}
-
-function toggleTextBold(){
-  const text = currentSelection.element
-  if (text.fontWeight === 'normal') {
-    text.set('fontWeight', 'bold');
-  } else {
-    text.set('fontWeight', 'normal');
-  }
-  text.setCoords();
-  editor.canvas.renderAll();
-}
-
-function toggleTextUnderline(){
-  const text = currentSelection.element
-  if (text.underline === true) {
-    text.set('underline', false);
-  } else {
-    text.set('underline', true);
-  }
-  text.setCoords();
-  editor.canvas.renderAll();
-}
-
-function toggleTextItalic(){
-  const text = currentSelection.element
-  if (text.fontStyle === 'normal') {
-    text.set('fontStyle', 'italic');
-  } else {
-    text.set('fontStyle', 'normal');
-  }
-  text.setCoords();
-  editor.canvas.renderAll();
-}
-
-function reduceFont() {
-  if (currentSelection && currentSelection.element) {
-    let size = currentSelection.element.fontSize;
-    if (size > 8){
-      if (size % 2 === 0){
-        size -= 2
-      }else{
-        size -= 1
-      }
-      currentSelection.element.set('fontSize', size);
-      fontSize.value = size
-    }
-    editor.canvas.renderAll();
-  }
-}
-
-function setFontSize(val){
-  if (currentSelection && currentSelection.element) {
-    currentSelection.element.set('fontSize', val);
-    currentSelection.element.setCoords();
-    editor.canvas.renderAll();
-  }
-}
-
-function addFont() {
-  if (currentSelection && currentSelection.element) {
-    let size = currentSelection.element.fontSize;
-    if (size < 64){
-      if (size % 2 === 0){
-        size += 2
-      }else{
-        size += 1
-      }
-      currentSelection.element.set('fontSize', size);
-      fontSize.value = size
-    }
-    editor.canvas.renderAll();
-  }
-}
-
-function changeAlignment(align){
-  if (currentSelection && currentSelection.element) {
-    currentSelection.element.set('textAlign', align);
-    editor.canvas.renderAll();
-  }
 }
 
 function createEditor(ctx) {
@@ -148,23 +54,19 @@ function createEditor(ctx) {
     const object = options.target;
     addObject({ type: object.type, element: object });
     object.canvas = canvas
+    object.setControlsVisibility({
+      mt: true, mb: true, ml: true, mr: true, bl: true, br: true, tl: true, tr: true, mtr: true,
+    });
     
     object.on('selected', function() {
       selectObject(object);
-      if (object.type === 'text'){
-        fontSize.value = object.fontSize
-      }
-    });
-
-    object.setControlsVisibility({
-      mt: true, mb: true, ml: true, mr: true, bl: true, br: true, tl: true, tr: true, mtr: true,
+      changeEditView({ type: object.type, action: 'create', scope: null})
     });
 
     object.on('deselected', function(){
       console.log("Object Lost Focus")
-      canvas.discardActiveObject()
       selectObject(null)
-      changeEditView({ type: 'text', action: 'create'})
+      changeEditView({ type: object.type, action: 'create', scope: null})
     })
     
     object.set('lockRotation', false);
@@ -185,29 +87,63 @@ function createEditor(ctx) {
     // }
   });
 
-
-  canvas.on('mouse:dblclick', function (options) {
-    const object = options.target;
-
-    if (object && object.type === 'text') {
-      const newText = prompt('Enter new text:', object.text);
-      if (newText !== null) {
-        object.set('text', newText);
-        canvas.renderAll();
-      }
-    }
-  });
-
   setEditor(canvas);
   return canvas;
 }
 
 const url = `${document.location.protocol}//${document.location.host}`
 
+function handleKeyboardEvent(event){
+  const activeObject = currentSelection.element;
+  if (activeObject && activeObject.isEditing){
+    return;
+  }
+
+  event.preventDefault();
+  if (event.key === 'Delete' || event.key === 'Backspace') {
+    if (currentSelection && currentSelection.element) {
+      editor.canvas.remove(currentSelection.element);
+      editor.canvas.discardActiveObject();
+      editor.canvas.renderAll();
+      selectObject(null)
+    }
+  }else{
+    // any other key event <Arrow keys>
+    if (currentSelection && currentSelection.element) {
+      const step = 1.25; // Amount of pixels to move the object
+      let moved = false;
+
+      switch (event.key) {
+        case 'ArrowUp':
+          currentSelection.element.top -= step;
+          moved = true;
+        break;
+        case 'ArrowDown':
+          currentSelection.element.top += step;
+          moved = true;
+        break;
+        case 'ArrowLeft':
+          currentSelection.element.left -= step;
+          moved = true;
+        break;
+        case 'ArrowRight':
+          currentSelection.element.left += step;
+          moved = true;
+        break;
+      }
+      if (moved) {
+        currentSelection.element.setCoords(); // Update the object's coordinates
+        editor.canvas.renderAll(); // Re-render the canvas to show the changes
+      }
+    }
+  }
+}
+
 // On mounted
 onMounted(() => {
   try {
     // editor.value = createEditor(canvasElement.value);
+    window.addEventListener('keydown', handleKeyboardEvent);
     createEditor(canvasElement.value);
     canvasElement.value.style.backgroundImage = `url('${url}/${flyerImage}')`;
     canvasElement.value.style.backgroundSize = '100%';
@@ -222,6 +158,10 @@ onMounted(() => {
     console.log("Error initializing canvas:", error);
   }
 });
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyboardEvent);
+})
 
 function saveCanvasAsImage() {
   const canvasElement = document.getElementById('canvas');
