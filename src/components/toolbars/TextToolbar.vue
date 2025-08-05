@@ -134,11 +134,15 @@ function changeAlignment(align){
 
   <div class="flex" v-bind="currentSelection" v-if="currentSelection.type === 'textbox'">
       <button @click="toggleTextBold" class="btn font-mono font-bold">B</button>
-      <!-- <button @click="toggleTextUnderline" class="btn font-bold font-mono underline">U</button> -->
+      <button @click="toggleTextUnderline" class="btn font-bold font-mono underline">U</button>
       <button @click="toggleTextItalic" class="btn font-bold font-serif"><i>I</i></button>
   </div>
 </template>
 
 
-<style>
+<style scoped>
+  button{
+    color: black !important;
+    background-color: aliceblue;
+  }
 </style>

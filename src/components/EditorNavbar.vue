@@ -40,9 +40,10 @@ function saveCanvasAsImage() {
   const tempCtx = tempCanvas.getContext('2d');
   // Draw the background image on the temporary canvas
   const backgroundImage = new Image();
-  backgroundImage.src = `http://localhost:3000/${flyerImage}`; // The URL of your background image
+  backgroundImage.src = `${location.origin}/${flyerImage}`; // The URL of your background image
   backgroundImage.style.zIndex = 30;
   alert("Downloading...");
+  const fname = prompt("Enter a name for the image", "canvas_export");
 
   try {
     backgroundImage.onload = () => {
@@ -58,7 +59,7 @@ function saveCanvasAsImage() {
         const dataURL = tempCanvas.toDataURL('image/jpeg');
         const link = document.createElement('a');
         link.href = dataURL;
-        link.download = 'canvas_export.jpg';
+        link.download = `${fname}.jpg`;
         link.click();
       };
     };
@@ -72,8 +73,8 @@ function saveCanvasAsImage() {
 
 <template>
     
-    <div class="px-2 bg-[#ffffffd6] justify-between align-center flex flex-wrap flex-1 transition-all gap-1 py-2">
-      <button class="rounded px-2 py-2 bg-[#ddd] font-bold" @click="saveCanvasAsImage"> <BxSolidCloudDownload class="text-[20px]" /> </button>
+    <div class="px-2 bg-[#2b2929] justify-between align-center flex flex-wrap flex-1 transition-all gap-1 py-2">
+      <button title="Download" class="rounded px-2 py-2 bg-white text-[#000] font-bold" @click="saveCanvasAsImage"> <BxSolidCloudDownload class="text-[20px]" /> </button>
         
         <slot>
           <TextToolbar />

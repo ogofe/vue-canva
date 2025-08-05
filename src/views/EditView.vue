@@ -176,7 +176,7 @@ function saveCanvasAsImage() {
   const backgroundImage = new Image();
   backgroundImage.src = `${url}/${flyerImage}`; // The URL of your background image
   backgroundImage.style.zIndex = 30;
-  alert("Downloading...");
+  // alert("Downloading...");
 
   try {
     backgroundImage.onload = () => {
@@ -194,6 +194,8 @@ function saveCanvasAsImage() {
         link.href = dataURL;
         link.download = 'canvas_export.jpg';
         link.click();
+
+        console.log("Image ", link.href)
       };
     };
   } catch (error) {
